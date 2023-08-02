@@ -2,12 +2,14 @@ package com.reactapp.springjwt.controllers;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.reactapp.springjwt.models.ERole;
 import com.reactapp.springjwt.models.Role;
 import com.reactapp.springjwt.models.User;
+import com.reactapp.springjwt.payload.request.ChangePasswordRequest;
 import com.reactapp.springjwt.payload.request.LoginRequest;
 import com.reactapp.springjwt.payload.request.SignupRequest;
 import com.reactapp.springjwt.payload.response.JwtResponse;
@@ -77,13 +81,13 @@ public class AuthController {
     if (userRepository.existsByUsername(signUpRequest.getUsername())) {
       return ResponseEntity
           .badRequest()
-          .body(new MessageResponse("Error: Username is already taken!"));
+          .body(new MessageResponse("Λάθος: Το όνομα χρήστη υπάρχει!"));
     }
 
     if (userRepository.existsByEmail(signUpRequest.getEmail())) {
       return ResponseEntity
           .badRequest()
-          .body(new MessageResponse("Error: Email is already in use!"));
+          .body(new MessageResponse("Λάθος: Το Email χρησιμοποιείται!"));
     }
 
     // Create new user's account
@@ -124,6 +128,49 @@ public class AuthController {
     user.setRoles(roles);
     userRepository.save(user);
 
-    return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+    return ResponseEntity.ok(new MessageResponse("Ο χρήστης καταχωρήθηκε σωστά!"));
   }
+  
+  @PutMapping("/changepassword")
+  public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
+
+	boolean isWithinDb = false;  
+	
+	Optional<User> user = Optional.empty();
+	
+    //Check if it is a username or email and try to find if it exists in the database
+    if (changePasswordRequest.getUsername()!=null) {
+    	isWithinDb = userRepository.existsByUsername(changePasswordRequest.getUsername());
+    	
+    	user = userRepository.findByUsername(changePasswordRequest.getUsername());
+    	
+    } else if (!isWithinDb && changePasswordRequest.getEmail()!=null) {
+    	isWithinDb = userRepository.existsByEmail(changePasswordRequest.getEmail());
+    	
+    	user = userRepository.findByEmail(changePasswordRequest.getEmail());
+    	
+    }
+    
+    if (isWithinDb) {
+    	//The user exists in db 
+    	//Check if the password and verifyPassword are the same
+    	changeUserPassword(user.get(),changePasswordRequest.getPassword());
+    	
+    	return ResponseEntity.ok(new MessageResponse("Επιτυχής αλλαγή password!"));
+    	
+    } else {
+    	
+    	return ResponseEntity.ok(new MessageResponse("Ανεπιτυχής αλλαγή password!"));
+    	
+    }
+    
+    
+  }
+  
+  public void changeUserPassword(User user, String password) {
+	    user.setPassword(encoder.encode(password));
+	    userRepository.save(user);
+	}
+  
+  
 }
