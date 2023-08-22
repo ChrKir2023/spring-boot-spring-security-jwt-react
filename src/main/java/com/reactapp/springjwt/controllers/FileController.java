@@ -35,6 +35,7 @@ import com.reactapp.springjwt.models.Allroute;
 import com.reactapp.springjwt.models.FileUpload;
 import com.reactapp.springjwt.payload.request.RouteRequest;
 import com.reactapp.springjwt.payload.response.FileUploadResponse;
+import com.reactapp.springjwt.payload.response.MessageResponse;
 import com.reactapp.springjwt.security.services.FileUploadService;
 
 import org.springframework.core.io.InputStreamResource;
@@ -50,7 +51,7 @@ public class FileController {
 	
 	@PostMapping(value = "/upload")
 	//public ResponseEntity<Object> uploadFiles(@RequestParam("name") String name ,@RequestParam("files") MultipartFile[] files , consumes = MediaType.MULTIPART_FORM_DATA_VALUE) {
-	public ResponseEntity<Object> uploadFiles(@RequestParam("name") String name,
+	public ResponseEntity<?> uploadFiles(@RequestParam("name") String name,
 			                                  @RequestParam("routeid") String routeid, 
 			                                  @RequestParam("pointid") String pointid,
 			                                  @RequestPart("files") MultipartFile[] files,
@@ -68,9 +69,10 @@ public class FileController {
 	          }
 	        }).collect(Collectors.toList());
 
-	    return new ResponseEntity<>(fileUploadResponses, HttpStatus.OK);
+	   // return new ResponseEntity<>(fileUploadResponses, HttpStatus.OK);
+	    return ResponseEntity.ok(new MessageResponse("Επιτυχής ανέβασμα αρχείου!"));
 	  } catch (UncheckedIOException e) {
-	    return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		  return ResponseEntity.badRequest().body(new MessageResponse("Πρόβλημα με το ανέβασμα του αρχείου!Παρακαλώ επικοινωνήστε με τον διαχειριστή"));
 	 /* } catch (FileNotSupportedException e) {
 	    return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);*/
 	  }
