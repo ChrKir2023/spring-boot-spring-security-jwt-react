@@ -20,8 +20,8 @@ public interface PointRepository extends JpaRepository<Allpoint, Integer> {
 	List<Allpoint> findNearest(final Point geom);
 	
 	/*  SELECT * FROM allpoints WHERE ST_DWithin(location, ST_SetSRID(ST_Point(6.9333, 46.8167), 4326), 60)  */
-	@Query(value = "SELECT * FROM public.allpoints WHERE ST_DWithin(location, ST_SetSRID(ST_Point(:lat, :longit), 4326), :distance)", nativeQuery = true)
-	List<Allpoint> findWithinDistance(double lat,double longit,double distance);
+	@Query(value = "SELECT * FROM public.allpoints WHERE ST_DWithin(location, ST_SetSRID(ST_Point(:lat, :longit), 4326), :distance) and category=:category", nativeQuery = true)
+	List<Allpoint> findWithinDistance(double lat,double longit,double distance,String category);
 	
 	/*  SELECT * FROM allpoints WHERE ST_DWithin(location, ST_SetSRID(ST_Point(6.9333, 46.8167), 4326), 60)  */
 	@Query(value = "SELECT * FROM public.allpoints WHERE ST_DWithin(location, ST_SetSRID(ST_Point(:lat, :longit), 4326), :distance) and userid=:userid and routesid=:routesid", nativeQuery = true)

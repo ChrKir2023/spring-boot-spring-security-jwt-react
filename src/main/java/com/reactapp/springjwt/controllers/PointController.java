@@ -185,11 +185,11 @@ public class PointController {
 	 
 	 //Find the points within circle
 	 @GetMapping("/pointwithindist")
-	 public List<Allpoint> searchrwithindist(String lat,String longit,String distance) {
+	 public List<Allpoint> searchrwithindist(String lat,String longit,String distance,String category) {
 		 
 		 System.out.println("searchrwithindist pointwithindist Values are lat:"+lat+" longitudine : "+longit+" and distance is: "+distance);
-		 
-		 return pointRepository.findWithinDistance(Double.valueOf(lat), Double.valueOf(longit), Double.valueOf(distance));
+		 System.out.println("Value of category is:"+category);
+		 return pointRepository.findWithinDistance(Double.valueOf(lat), Double.valueOf(longit), Double.valueOf(distance),category);
 
 	  }
 	 
