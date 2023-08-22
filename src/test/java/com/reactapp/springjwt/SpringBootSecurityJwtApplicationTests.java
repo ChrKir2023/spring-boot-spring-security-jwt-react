@@ -6,13 +6,16 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.ResponseEntity;
 
+import com.reactapp.springjwt.controllers.AuthController;
 import com.reactapp.springjwt.controllers.FileController;
 import com.reactapp.springjwt.controllers.PointController;
 import com.reactapp.springjwt.controllers.RouteController;
 import com.reactapp.springjwt.models.Allpoint;
 import com.reactapp.springjwt.models.Allroute;
 import com.reactapp.springjwt.models.FileUpload;
+import com.reactapp.springjwt.payload.request.ChangePasswordRequest;
 import com.reactapp.springjwt.repository.PointRepository;
 
 @SpringBootTest
@@ -25,6 +28,8 @@ public class SpringBootSecurityJwtApplicationTests {
 	@Autowired private RouteController routeController;
 	
 	@Autowired private FileController fileController;
+	
+	@Autowired private AuthController authController;
 
 	@Test
 	public void contextLoads() {
@@ -35,7 +40,7 @@ public class SpringBootSecurityJwtApplicationTests {
 		
 		List<Allpoint>	allpointsindist = new ArrayList();
 		//Add a test to check radius with Postgis
-		allpointsindist = pointRepository.findWithinDistance(10.46,16.3,40);
+		allpointsindist = pointRepository.findWithinDistance(10.46,16.3,40,"Αρχαία");
 		
 		for (Allpoint currentAllPoint : allpointsindist) {
 			System.out.println("Name of point is:"+currentAllPoint.getDescription());
@@ -51,7 +56,7 @@ public class SpringBootSecurityJwtApplicationTests {
 		
 		List<Allpoint>	allpointsindist = new ArrayList();
 		//Add a test to check radius with Postgis
-		allpointsindist = pointController.searchrwithindist("10.46","16.3","40");
+		allpointsindist = pointController.searchrwithindist("10.46","16.3","40","Αρχαία");
 		
 		for (Allpoint currentAllPoint : allpointsindist) {
 			System.out.println("Name of point is:"+currentAllPoint.getDescription());
@@ -170,6 +175,28 @@ public class SpringBootSecurityJwtApplicationTests {
 			int maxseqnum = pointRepository.findSeqByUserIdAndRoutesId(8, 3);
 			
 			System.out.println(" Point seq num "+maxseqnum);
+			
+		} catch(Exception e) {
+			System.out.println("System error is:"+e.getLocalizedMessage());
+		}
+		
+		
+	}
+	
+	@Test
+	public void changePasswordTest() {
+		
+		ResponseEntity<?> responseEntity;
+		
+		try {
+			ChangePasswordRequest changePasswordRequest = new ChangePasswordRequest();
+			
+			changePasswordRequest.setUsername("testuser3");
+			changePasswordRequest.setPassword("testuser4");
+			
+			responseEntity = authController.changePassword(changePasswordRequest);
+			
+			System.out.println(" ChangePasswordTest  "+responseEntity.toString());
 			
 		} catch(Exception e) {
 			System.out.println("System error is:"+e.getLocalizedMessage());
