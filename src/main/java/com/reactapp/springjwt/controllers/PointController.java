@@ -183,7 +183,7 @@ public class PointController {
 		 return allpoints;
 	  }
 	 
-	 //Find the points within circle
+	//Find the points within circle
 	 @GetMapping("/pointwithindist")
 	 public List<Allpoint> searchrwithindist(String lat,String longit,String distance,String category) {
 		 
