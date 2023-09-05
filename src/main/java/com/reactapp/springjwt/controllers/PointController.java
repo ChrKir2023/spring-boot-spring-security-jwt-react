@@ -234,14 +234,15 @@ public class PointController {
 		@RequestMapping("/pointbypageandsize")
 		public PaginationPointsResponse pointsbypageandsize(@RequestParam("page") Optional<Integer> page, 
 					 			         @RequestParam("size") Optional<Integer> size,
-					 			         @RequestParam("userid") Optional<Integer> userid) {
+					 			         @RequestParam("userid") Optional<Integer> userid,
+					 			         @RequestParam("routeid") Optional<Integer> routeid) {
 			
 			
 
 		      System.out.println(" Value of page is: "+page.get());
 		      System.out.println(" Value of size is: "+size.get());
 		      System.out.println(" Value of page is: "+userid.get());
-		      
+		      System.out.println(" Value of page is: "+routeid.get());
 		      
 		      
 			
@@ -271,8 +272,13 @@ public class PointController {
 				  //Pagination using Sort.by
 				  pointsPage = pointRepository.findAll(PageRequest.of(currentPage - 1, pageSize,Sort.by("seqnum").descending()));
 			  } else {
-				  pointsPage = pointRepository.findPageByUserid(PageRequest.of(currentPage - 1, pageSize,Sort.by("seqnum").ascending()),userid.get());
+				  //pointsPage = pointRepository.findPageByUserid(PageRequest.of(currentPage - 1, pageSize,Sort.by("seqnum").ascending()),userid.get());
 				  System.out.println(" Authority is: NOT ADMIN ");
+				  
+				  Optional<Allroute> routepoints = routeRepository.findById(routeid.get());
+				  pointsPage = pointRepository.findPageByUseridAndAllroute(PageRequest.of(currentPage - 1, pageSize,Sort.by("seqnum").ascending()),userid.get(),routepoints.get());
+				  
+				  
 			  }
 			  
 		      int totalPages = pointsPage.getTotalPages()+1;
