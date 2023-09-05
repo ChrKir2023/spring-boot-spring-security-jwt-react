@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.reactapp.springjwt.models.Allpoint;
+import com.reactapp.springjwt.models.Allroute;
 
 @Repository
 public interface PointRepository extends JpaRepository<Allpoint, Integer> {	
@@ -36,5 +37,7 @@ public interface PointRepository extends JpaRepository<Allpoint, Integer> {
 	int findSeqByUserIdAndRoutesId(int userid,int routesid);
 	
 	Page<Allpoint> findPageByUserid(Pageable pageable,int userid); 
+	
+	Page<Allpoint> findPageByUseridAndAllroute(Pageable pageable,int userid,Allroute route);
 	
 }
